@@ -21,10 +21,13 @@ projection = glm.ortho(-10.0, 10.0, -7.5, 7.5, -1.0, 1.0)
 program["projection"].write(np.array(projection.to_list(), dtype="f4").tobytes())
 
 ship_vertices = np.array([0.8, 0.0, -0.4, 0.4, -0.2, 0.0, -0.4, -0.4], dtype="f4")
-vao = ctx.simple_vertex_array(program, ctx.buffer(ship_vertices.tobytes()), "in_pos")
 
 dt = 1.0 / 60.0
 ship = Ship()
+
+vbo = ctx.buffer(ship_vertices.tobytes())
+vao = ctx.simple_vertex_array(program, vbo, "in_pos")
+
 
 while not glfw.window_should_close(window):
     glfw.poll_events()
@@ -37,7 +40,18 @@ while not glfw.window_should_close(window):
     program["model"].write(np.array(model.to_list(), dtype="f4").tobytes())
 
     ctx.clear(0.02, 0.02, 0.05)
-    vao.render(moderngl.LINE_LOOP)
+
+    ctx.line_width = 2.0
+    program["color"].value = (
+       0.0,0.0,0.0,0.0
+    )
+    vao.render(moderngl.TRIANGLES)
+
+    program["color"].value = (1.0, 1.0, 1.0, 1.0)
+    vao.render(
+        mode=moderngl.LINE_LOOP
+    )
+    
     glfw.swap_buffers(window)
 
 glfw.destroy_window(window)
