@@ -1,12 +1,14 @@
 import glfw
 import glm
+import moderngl
 
 class Ship:
     ACCEL = 12.0
     FRICTION = 0.985
     ROT_SPEED = 3.5
 
-    def __init__(self):
+    def __init__(self, mesh):
+        self.mesh = mesh
         self.position = glm.vec2(0.0, 0.0)
         self.velocity = glm.vec2(0.0, 0.0)
         self.angle = 0.0
@@ -37,4 +39,7 @@ class Ship:
         self.position += self.velocity * dt
         self.velocity *= self.FRICTION
         self.wrap_screen()
+
+    def render(self, mode=moderngl.TRIANGLES):
+        self.mesh.render(mode = mode)
 
