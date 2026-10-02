@@ -1,0 +1,60 @@
+import glfw
+import glm
+import moderngl
+
+import random
+import math
+
+class Asteroid:
+    SPEED = 1.5
+
+    def __init__(self, mesh):
+        self.mesh = mesh
+
+        x,y = self.generate_initial_position()
+        self.position = glm.vec2(x,y)
+
+        self.angle =  math.radians(random.randint(1, 360))
+        self.velocity = glm.vec2(math.cos(self.angle), math.sin(self.angle)) * self.SPEED
+
+    def generate_initial_position(self):
+        x_limit = 10
+        y_limit = 7
+
+        rand_number = random.randint(1, 2)
+        if(rand_number > 1):
+            x = random.randint(-x_limit, x_limit)
+            if(x==10 or x==-10):
+                y = random.randint(-y_limit, y_limit)
+            else:
+                y = random.choice([7,-7])
+            return x,y
+
+        y = random.randint(-y_limit, y_limit)
+        if(y==7 or y==-7):
+            x = random.randint(-x_limit, x_limit)
+        else:
+             x = random.choice([10,-10])
+        
+        return x,y
+
+    def wrap_screen(self):
+        if self.position.x > 10.0: 
+            self.position.x = -10.0
+
+        elif self.position.x < -10.0: 
+            self.position.x = 10.0
+
+        if self.position.y > 7.5:
+            self.position.y = -7.5
+
+        elif self.position.y < -7.5: 
+            self.position.y = 7.5
+
+    def update(self, dt):
+        self.position += self.velocity * dt
+        self.wrap_screen()
+        
+    def render(self, mode=moderngl.TRIANGLES):
+        self.mesh.render(mode = mode)
+
