@@ -4,6 +4,7 @@ import moderngl
 
 import random
 import math
+import numpy as np
 
 class Asteroid:
     SPEED = 1.5
@@ -57,4 +58,15 @@ class Asteroid:
         
     def render(self, mode=moderngl.TRIANGLES):
         self.mesh.render(mode = mode)
+
+    def draw(self, ctx, program):
+        model = glm.translate(glm.mat4(1.0), glm.vec3(self.position.x, self.position.y, 0.0))
+        model = glm.rotate(model, self.angle, glm.vec3(0.0, 0.0, 1.0))
+        program["model"].write(np.array(model.to_list(), dtype="f4").tobytes())
+        
+        ctx.line_width = 2.0
+        program["color"].value = (0.0,0.0,0.0,0.0)
+        self.render(mode = moderngl.TRIANGLE_FAN)
+        program["color"].value = (1.0, 1.0, 1.0, 1.0)
+        self.render(mode=moderngl.LINE_LOOP)
 
