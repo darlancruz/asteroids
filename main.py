@@ -97,7 +97,7 @@ while not glfw.window_should_close(window):
 
     ctx.line_width = 2.0
     program["color"].value = (0.0,0.0,0.0,0.0)
-    ship.render(mode = moderngl.TRIANGLE_FAN)
+    asteroid.render(mode = moderngl.TRIANGLE_FAN)
     program["color"].value = (1.0, 1.0, 1.0, 1.0)
     asteroid.render(mode=moderngl.LINE_LOOP)
 
