@@ -63,6 +63,13 @@ def create_asteroid(ctx, program):
     return asteroid
 
 
+def calculate_delta_time(last_time):
+    current_time = glfw.get_time()
+    dt = current_time - last_time
+
+    return current_time, dt
+
+
 initializate_glfw()
 window = generate_window()
 
@@ -73,8 +80,10 @@ setup_projection_matrix(program)
 ship = create_ship(ctx,program)
 asteroid = create_asteroid(ctx, program)
 
-dt = 1.0 / 60.0
+last_time = glfw.get_time()
 while not glfw.window_should_close(window):
+    last_time, dt = calculate_delta_time(last_time)
+
     glfw.poll_events()
    
     ship.handleInput(window, dt)
