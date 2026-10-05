@@ -33,7 +33,7 @@ def setup_projection_matrix(program):
     projection = glm.ortho(-10.0, 10.0, -7.5, 7.5, -1.0, 1.0)
     program["projection"].write(np.array(projection.to_list(), dtype="f4").tobytes())
 
-def kill_game():
+def kill_game(window):
     glfw.destroy_window(window)
     glfw.terminate()
 
@@ -105,4 +105,4 @@ while not glfw.window_should_close(window):
 
     glfw.swap_buffers(window)
 
-kill_game()
+kill_game(window)
