@@ -18,6 +18,8 @@ def initializate_glfw():
 
 def generate_window():
     window = glfw.create_window(800, 600, "Asteroids", None, None)
+    if not window:
+     raise RuntimeError("Erro ao criar Janela")
     glfw.make_context_current(window)
     return window
 
