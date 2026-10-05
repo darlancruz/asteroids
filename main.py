@@ -76,6 +76,11 @@ def update(dt):
     ship.update(dt)
     asteroid.update(dt)
 
+def render(ctx, ship, asteroid):
+    ctx.clear(0.02, 0.02, 0.05)
+    ship.draw(ctx, program)
+    asteroid.draw(ctx, program)
+
 initializate_glfw()
 window = generate_window()
 
@@ -93,10 +98,7 @@ while not glfw.window_should_close(window):
     glfw.poll_events()
     handle_input(window, dt)
     update(dt)
-
-    ctx.clear(0.02, 0.02, 0.05)
-    ship.draw(ctx, program)
-    asteroid.draw(ctx, program)
+    render(ctx, ship, asteroid)
 
     glfw.swap_buffers(window)
 
