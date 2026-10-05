@@ -69,6 +69,12 @@ def calculate_delta_time(last_time):
 
     return current_time, dt
 
+def handle_input(window, dt):
+    ship.handleInput(window, dt)
+
+def update(dt):
+    ship.update(dt)
+    asteroid.update(dt)
 
 initializate_glfw()
 window = generate_window()
@@ -85,10 +91,8 @@ while not glfw.window_should_close(window):
     last_time, dt = calculate_delta_time(last_time)
 
     glfw.poll_events()
-   
-    ship.handleInput(window, dt)
-    ship.update(dt)
-    asteroid.update(dt)
+    handle_input(window, dt)
+    update(dt)
 
     ctx.clear(0.02, 0.02, 0.05)
 
