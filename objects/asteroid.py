@@ -7,16 +7,29 @@ import math
 import numpy as np
 
 class Asteroid:
-    SPEED = 1.5
 
-    def __init__(self, mesh):
+    COR_NOITE = (0.0,0.0,0.0,0.0)
+    CONTORNO_NOITE = (1.0, 1.0, 1.0, 1.0)
+
+    COR_DIA = (0.059, 0.220, 0.059, 1.0)
+    CONTORNO_DIA = (0.0,0.0,0.0,0.0)
+
+    def __init__(self, mesh, size):
         self.mesh = mesh
 
         x,y = self.generate_initial_position()
         self.position = glm.vec2(x,y)
 
         self.angle =  math.radians(random.randint(1, 360))
-        self.velocity = glm.vec2(math.cos(self.angle), math.sin(self.angle)) * self.SPEED
+
+        if(size == "G"):
+            speed = 1.5
+        elif(size == "M"):
+            speed = 3
+        else:
+            speed = 6
+
+        self.velocity = glm.vec2(math.cos(self.angle), math.sin(self.angle)) * speed
 
     def generate_initial_position(self):
         x_limit = 10
@@ -59,14 +72,15 @@ class Asteroid:
     def render(self, mode=moderngl.TRIANGLES):
         self.mesh.render(mode = mode)
 
-    def draw(self, ctx, program):
+    def draw(self, ctx, program, noite):
         model = glm.translate(glm.mat4(1.0), glm.vec3(self.position.x, self.position.y, 0.0))
         model = glm.rotate(model, self.angle, glm.vec3(0.0, 0.0, 1.0))
         program["model"].write(np.array(model.to_list(), dtype="f4").tobytes())
         
         ctx.line_width = 2.0
-        program["color"].value = (0.0,0.0,0.0,0.0)
-        self.render(mode = moderngl.TRIANGLE_FAN)
-        program["color"].value = (1.0, 1.0, 1.0, 1.0)
+       
+        program["color"].value = self.COR_NOITE if noite else self.COR_DIA
+        self.render(mode = moderngl.LINE_LOOP)
+        program["color"].value = self.CONTORNO_NOITE if noite else self.CONTORNO_DIA
         self.render(mode=moderngl.LINE_LOOP)
 
