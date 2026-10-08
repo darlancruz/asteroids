@@ -16,7 +16,6 @@ FUNDO_DIA = (0.608, 0.737, 0.059, 1.0)
 FUNDO_NOITE = (0.02, 0.02, 0.05, 1.0)
 
 noite = True
-
 def initializate_glfw():
     if not glfw.init():
         raise RuntimeError("Falha GLFW.")
@@ -130,14 +129,19 @@ setup_projection_matrix(program)
 ship = create_ship(ctx,program)
 arr_asteroid = create_arr_asteroid(ctx, program)
 
+down_pressed = False
+
 last_time = glfw.get_time()
 while not glfw.window_should_close(window):
     last_time, dt = calculate_delta_time(last_time)
 
     glfw.poll_events()
 
-    if (glfw.get_key(window, glfw.KEY_DOWN)):
+    down = glfw.get_key(window, glfw.KEY_DOWN) == glfw.PRESS
+    if down and not down_pressed:
         noite = not noite
+
+    down_pressed = down
 
     handle_input(window, dt)
     update(dt, ship, arr_asteroid)
