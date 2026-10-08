@@ -11,6 +11,7 @@ import random
 from mesh import Mesh
 from objects.ship import Ship
 from objects.asteroid import Asteroid
+from objects.lifebar import LifeBar
 
 FUNDO_DIA = (0.608, 0.737, 0.059, 1.0)
 FUNDO_NOITE = (0.02, 0.02, 0.05, 1.0)
@@ -128,6 +129,7 @@ setup_projection_matrix(program)
 
 ship = create_ship(ctx,program)
 arr_asteroid = create_arr_asteroid(ctx, program)
+life_bar = LifeBar(ctx, program)
 
 down_pressed = False
 
@@ -146,6 +148,7 @@ while not glfw.window_should_close(window):
     handle_input(window, dt)
     update(dt, ship, arr_asteroid)
     render(ctx, ship, arr_asteroid)
+    life_bar.draw(ctx, program, noite)
 
     glfw.swap_buffers(window)
 
