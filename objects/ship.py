@@ -57,8 +57,6 @@ class Ship:
         program["model"].write(np.array(model.to_list(), dtype="f4").tobytes())
         
         ctx.line_width = 2.0
-        program["color"].value = self.COR_NOITE if noite else self.COR_DIA
-        self.render(mode = moderngl.TRIANGLE_FAN)
         program["color"].value = self.CONTORNO_NOITE if noite else self.CONTORNO_DIA
         self.render(mode=moderngl.LINE_LOOP)
 
