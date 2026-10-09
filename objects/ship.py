@@ -58,5 +58,5 @@ class Ship:
         
         ctx.line_width = 2.0
         program["color"].value = self.CONTORNO_NOITE if noite else self.CONTORNO_DIA
-        self.render(mode=moderngl.LINE_LOOP)
+        self.render(mode=moderngl.TRIANGLE_FAN)
 
