@@ -120,7 +120,7 @@ def render(ctx, ship, arr_asteroid):
     ship.draw(program, is_dark=is_dark)
 
     for asteroid in arr_asteroid:
-        asteroid.draw(ctx, program, noite)
+        asteroid.draw(program, ctx, is_dark=is_dark)
 
 initializate_glfw()
 window = generate_window()

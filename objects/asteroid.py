@@ -6,13 +6,9 @@ import random
 import math
 import numpy as np
 
-class Asteroid:
+from objects.model import Model
 
-    COR_NOITE = (0.0,0.0,0.0,0.0)
-    CONTORNO_NOITE = (1.0, 1.0, 1.0, 1.0)
-
-    COR_DIA = (0.059, 0.220, 0.059, 1.0)
-    CONTORNO_DIA = (0.0,0.0,0.0,0.0)
+class Asteroid(Model):
 
     def __init__(self, mesh, size):
         self.mesh = mesh
@@ -51,36 +47,8 @@ class Asteroid:
              x = random.choice([10,-10])
         
         return x,y
-
-    def wrap_screen(self):
-        if self.position.x > 10.0: 
-            self.position.x = -10.0
-
-        elif self.position.x < -10.0: 
-            self.position.x = 10.0
-
-        if self.position.y > 7.5:
-            self.position.y = -7.5
-
-        elif self.position.y < -7.5: 
-            self.position.y = 7.5
-
-    def update(self, dt):
-        self.position += self.velocity * dt
-        self.wrap_screen()
         
-    def render(self, mode=moderngl.TRIANGLES):
-        self.mesh.render(mode = mode)
-
-    def draw(self, ctx, program, noite):
-        model = glm.translate(glm.mat4(1.0), glm.vec3(self.position.x, self.position.y, 0.0))
-        model = glm.rotate(model, self.angle, glm.vec3(0.0, 0.0, 1.0))
-        program["model"].write(np.array(model.to_list(), dtype="f4").tobytes())
-        
+    def draw(self, program, ctx, is_dark=False):
         ctx.line_width = 2.0
-       
-        program["color"].value = self.COR_NOITE if noite else self.COR_DIA
-        self.render(mode = moderngl.LINE_LOOP)
-        program["color"].value = self.CONTORNO_NOITE if noite else self.CONTORNO_DIA
-        self.render(mode=moderngl.LINE_LOOP)
+        super().draw(program, mode=moderngl.LINE_LOOP, is_dark=is_dark)
 
