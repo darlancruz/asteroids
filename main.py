@@ -8,7 +8,7 @@ import math
 import numpy as np
 import random
 
-from mesh import Mesh
+from objects.mesh import Mesh
 from objects.ship import Ship
 from objects.asteroid import Asteroid
 from objects.lifebar import LifeBar

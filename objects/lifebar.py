@@ -2,7 +2,7 @@ import glm
 import moderngl
 import numpy as np
 
-from mesh import Mesh
+from objects.mesh import Mesh
 
 class LifeBar:
     MAX_LIVES = 3
