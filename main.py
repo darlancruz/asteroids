@@ -17,6 +17,8 @@ FUNDO_DIA = (0.608, 0.737, 0.059, 1.0)
 FUNDO_NOITE = (0.02, 0.02, 0.05, 1.0)
 
 noite = True
+is_dark = True
+
 def initializate_glfw():
     if not glfw.init():
         raise RuntimeError("Falha GLFW.")
@@ -115,7 +117,7 @@ def update(dt, ship, arr_asteroid):
 
 def render(ctx, ship, arr_asteroid):
     ctx.clear(*(FUNDO_NOITE if noite else FUNDO_DIA))
-    ship.draw(ctx, program, noite)
+    ship.draw(program, is_dark=is_dark)
 
     for asteroid in arr_asteroid:
         asteroid.draw(ctx, program, noite)
@@ -142,6 +144,7 @@ while not glfw.window_should_close(window):
     down = glfw.get_key(window, glfw.KEY_DOWN) == glfw.PRESS
     if down and not down_pressed:
         noite = not noite
+        is_dark = not is_dark
 
     down_pressed = down
 
