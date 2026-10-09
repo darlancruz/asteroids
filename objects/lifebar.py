@@ -3,12 +3,10 @@ import moderngl
 import numpy as np
 
 from objects.mesh import Mesh
+from objects.model import Model
 
-class LifeBar:
+class LifeBar(Model):
     MAX_LIVES = 3
-
-    COR_NOITE = (1.0, 1.0, 1.0, 1.0)
-    COR_DIA = (0.0, 0.0, 0.0, 1.0)
 
     def __init__(self, ctx, program):
         self.ctx = ctx
@@ -21,25 +19,25 @@ class LifeBar:
 
         self.mesh = Mesh(ctx,program,vertices)
 
-    def draw_heart(self, x, y, noite):
+    def draw_heart(self, x, y, is_dark=False):
         model = glm.translate(glm.mat4(1.0), glm.vec3(x, y, 0.0))
         model = glm.scale(model, glm.vec3(0.7, 0.7, 1.0))
 
         self.program["model"].write(np.array(model.to_list(),dtype="f4").tobytes())
         self.ctx.line_width = 2.0
 
-        if noite: 
-            self.program["color"].value = self.COR_NOITE
+        if is_dark:
+            self.program["color"].value = super().DARK_COLOR
         else: 
-            self.program["color"].value = self.COR_DIA
+            self.program["color"].value = super().LIGHT_COLOR
 
         self.mesh.render( mode=moderngl.TRIANGLE_FAN)
 
-    def draw(self, ctx, program, noite):
+    def draw(self, is_dark=False):
         start_x = -8.8
         y = 6.5
         spacing = 1.4
 
         for i in range(self.lives):
             x = start_x + i * spacing
-            self.draw_heart(x,y,noite)
+            self.draw_heart(x,y,is_dark)

@@ -151,7 +151,7 @@ while not glfw.window_should_close(window):
     handle_input(window, dt)
     update(dt, ship, arr_asteroid)
     render(ctx, ship, arr_asteroid)
-    life_bar.draw(ctx, program, noite)
+    life_bar.draw(is_dark=is_dark)
 
     glfw.swap_buffers(window)
 
