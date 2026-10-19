@@ -114,7 +114,7 @@ def update(dt, ship, arr_asteroid):
     for asteroid in arr_asteroid:
         asteroid.update(dt)
 
-def render(ctx, ship, arr_asteroid):
+def render(ctx, program, ship, arr_asteroid):
     ctx.clear(*(DARK_THEME if is_dark else LIGHT_THEME))
     ship.draw(program, is_dark=is_dark)
 
@@ -148,8 +148,8 @@ while not glfw.window_should_close(window):
 
     handle_input(window, dt)
     update(dt, ship, arr_asteroid)
-    render(ctx, ship, arr_asteroid)
-    life_bar.draw(is_dark=is_dark)
+    render(ctx, program, ship, arr_asteroid)
+    life_bar.draw(is_dark)
 
     glfw.swap_buffers(window)
 
