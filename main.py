@@ -71,9 +71,8 @@ def create_asteroid(ctx, program, size="G"):
         MAX_SEGMENT = 8
 
     segments = random.randint(MIN_SEGMENT, MAX_SEGMENT)
+   
     vertices = []
-
-    vertices.extend([0.0, 0.0])
     base_radius = 1.5
 
     
