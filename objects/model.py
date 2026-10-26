@@ -30,6 +30,20 @@ class Model:
         elif self.position.y < -self.SCREEN_HEIGHT: 
             self.position.y = self.SCREEN_HEIGHT
 
+    def get_world_vertices(self):
+        model = glm.translate(glm.mat4(1.0), glm.vec3(self.position.x, self.position.y, 0.0))
+        model = glm.rotate(model, self.angle, glm.vec3(0.0, 0.0, 1.0))
+
+        world_vertices = []
+        for x, y in self.mesh.vertices:
+            vertex = glm.vec4(float(x), float(y), 0.0, 1.0)
+
+            transformed = model * vertex
+            world_vertices.append(glm.vec2(transformed.x, transformed.y))
+
+        return world_vertices
+
+
     def update(self, dt):
         self.position += self.velocity * dt
         self.wrap_screen()
