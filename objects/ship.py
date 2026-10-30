@@ -3,6 +3,7 @@ import glm
 import moderngl
 
 from objects.model import Model
+from objects.bullet import Bullet
 
 class Ship(Model):
     ACCEL = 12.0
@@ -54,6 +55,14 @@ class Ship(Model):
 
     def get_direction(self):
         return glm.vec2(glm.cos(self.angle),glm.sin(self.angle))
+
+    def shoot(self, bullet_mesh):
+
+        direction = self.get_direction()
+        position = self.position + direction * 0.8
+
+        return Bullet(bullet_mesh,position,direction)
+
 
     def update(self, dt):
         self.velocity *= self.FRICTION

@@ -27,6 +27,7 @@ class Game:
         self.ship = None
         self.arr_asteroid = []
         self.life_bar = None
+        self.arr_bullets = []
 
         self.is_dark = True
 
@@ -42,6 +43,8 @@ class Game:
         self.program = self.setup_shader_program()
 
         self.setup_projection_matrix()
+        self.bullet_mesh = self.create_bullet_mesh()
+
 
         self.create_objects()
 
@@ -74,6 +77,11 @@ class Game:
         ship_vertices = np.array([0.8, 0.0, -0.4, 0.4, -0.2, 0.0, -0.4, -0.4], dtype="f4")
         mesh = Mesh(self.ctx, self.program, ship_vertices)
         self.ship = Ship(mesh)
+
+    def create_bullet_mesh(self):
+        vertices = np.array([0.12, 0.0, 0.0, 0.12, -0.12, 0.0, 0.0, -0.12], dtype="f4")
+        return Mesh(self.ctx,self.program,vertices)
+
         
     def create_asteroid(self, size="G"):
         if size == "G":
@@ -136,6 +144,10 @@ class Game:
     def handle_key_event(self, window, key, scancode, action, mods):
         if key == glfw.KEY_DOWN and action == glfw.PRESS:
             self.is_dark = not self.is_dark
+        elif key == glfw.KEY_SPACE:
+            bullet = self.ship.shoot(self.bullet_mesh)
+            self.arr_bullets.append(bullet)
+
 
     def handle_collision(self):
         if self.ship.invulnerability_time > 0:
@@ -155,6 +167,10 @@ class Game:
         self.ship.update(dt)
         for asteroid in self.arr_asteroid:
             asteroid.update(dt)
+        for bullet in self.arr_bullets:
+            bullet.update(dt)
+        self.arr_bullets = [bullet for bullet in self.arr_bullets if bullet.active]
+
         self.handle_collision()
 
     def render(self):
@@ -164,6 +180,9 @@ class Game:
 
         for asteroid in self.arr_asteroid:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)
+        for bullet in self.arr_bullets:
+            bullet.draw(self.program, is_dark=self.is_dark)
+
 
     def run(self):
         last_time = glfw.get_time()
