@@ -6,12 +6,10 @@ from objects.mesh import Mesh
 from objects.model import Model
 
 class LifeBar(Model):
-    MAX_LIVES = 3
 
     def __init__(self, ctx, program):
         self.ctx = ctx
         self.program = program
-        self.lives = self.MAX_LIVES
 
         vertices = np.array([0.0, -0.60, -0.25, -0.40,-0.50, -0.10, -0.55,  0.20,
                              -0.45,  0.45,-0.25,  0.55, 0.00,  0.35, 0.25,  0.55,
@@ -33,11 +31,11 @@ class LifeBar(Model):
 
         self.mesh.render( mode=moderngl.TRIANGLE_FAN)
 
-    def draw(self, is_dark=False):
+    def draw(self, lives, is_dark=False):
         start_x = -8.8
         y = 6.5
         spacing = 1.4
 
-        for i in range(self.lives):
+        for i in range(lives):
             x = start_x + i * spacing
             self.draw_heart(x,y,is_dark)

@@ -31,6 +31,8 @@ class Game:
         self.is_dark = True
         self.down_pressed = False
 
+        self.lives = 3
+
         self.initialize()
 
     def initialize(self):
@@ -140,15 +142,26 @@ class Game:
 
         self.down_pressed = down
 
+    def handle_collision(self):
+        for asteroid in self.arr_asteroid:
+            if check_ship_asteroid_collision(self.ship, asteroid):
+                self.lose_life()
+                self.ship.reset_position()
+                break
+
+    def lose_life(self):
+        self.lives -= 1
+
     def update(self, dt):
         self.ship.update(dt)
         for asteroid in self.arr_asteroid:
             asteroid.update(dt)
+        self.handle_collision()
 
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))
         self.ship.draw(self.program, is_dark=self.is_dark)
-        self.life_bar.draw(self.is_dark)
+        self.life_bar.draw(self.lives, self.is_dark)
 
         for asteroid in self.arr_asteroid:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)

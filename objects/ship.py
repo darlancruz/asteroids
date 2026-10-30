@@ -20,6 +20,11 @@ class Ship(Model):
             heading = glm.vec2(glm.cos(self.angle), glm.sin(self.angle))
             self.velocity += heading * self.ACCEL * dt
 
+    def reset_position(self):
+        self.position = glm.vec2(0.0, 0.0)
+        self.velocity = glm.vec2(0.0, 0.0)
+        self.angle = 0.0
+
     def update(self, dt):
         self.velocity *= self.FRICTION
         super().update(dt)
