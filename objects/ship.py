@@ -2,8 +2,6 @@ import glfw
 import glm
 import moderngl
 
-import numpy as np
-
 from objects.model import Model
 
 class Ship(Model):
@@ -53,6 +51,9 @@ class Ship(Model):
         self.position = glm.vec2(0.0, 0.0)
         self.velocity = glm.vec2(0.0, 0.0)
         self.angle = 0.0
+
+    def get_direction(self):
+        return glm.vec2(glm.cos(self.angle),glm.sin(self.angle))
 
     def update(self, dt):
         self.velocity *= self.FRICTION
