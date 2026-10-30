@@ -143,6 +143,9 @@ class Game:
         self.down_pressed = down
 
     def handle_collision(self):
+        if self.ship.invulnerability_time > 0:
+            return
+    
         for asteroid in self.arr_asteroid:
             if check_ship_asteroid_collision(self.ship, asteroid):
                 self.lose_life()
@@ -151,6 +154,7 @@ class Game:
 
     def lose_life(self):
         self.lives -= 1
+        self.ship.make_invulnerable()
 
     def update(self, dt):
         self.ship.update(dt)
