@@ -29,7 +29,6 @@ class Game:
         self.life_bar = None
 
         self.is_dark = True
-        self.down_pressed = False
 
         self.lives = 3
 
@@ -46,8 +45,7 @@ class Game:
 
         self.create_objects()
 
-    @staticmethod
-    def initialize_glfw():
+    def initialize_glfw(self):
         if not glfw.init():
             raise RuntimeError("Falha GLFW.")
 
@@ -58,6 +56,7 @@ class Game:
             raise RuntimeError("Erro ao criar janela.")
 
         glfw.make_context_current(self.window)
+        glfw.set_key_callback(self.window, self.handle_key_event)
 
     def setup_shader_program(self):
         shader_dir = Path(__file__).parent / "shaders"
@@ -134,13 +133,9 @@ class Game:
     def handle_input(self, dt):
         self.ship.handleInput(self.window, dt)
 
-    def handle_global_input(self):
-        down = glfw.get_key(self.window, glfw.KEY_DOWN) == glfw.PRESS
-
-        if down and not self.down_pressed:
+    def handle_key_event(self, window, key, scancode, action, mods):
+        if key == glfw.KEY_DOWN and action == glfw.PRESS:
             self.is_dark = not self.is_dark
-
-        self.down_pressed = down
 
     def handle_collision(self):
         if self.ship.invulnerability_time > 0:
@@ -178,7 +173,6 @@ class Game:
 
             glfw.poll_events()
 
-            self.handle_global_input()
             self.handle_input(dt)
             self.update(dt)
             self.render()
