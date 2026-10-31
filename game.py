@@ -37,6 +37,7 @@ class Game:
 
         self.lives = 3
         self.score = 0
+        self.current_wave = 0
 
         self.vsync_enabled = True
         self.frame_count = 0
@@ -249,6 +250,12 @@ class Game:
         self.lives -= 1
         self.ship.make_invulnerable()
 
+    def spawn_asteroids(self):
+       if len(self.arr_asteroid) < 2:
+            self.current_wave += 1
+            num_large = min(2 + self.current_wave, 8)
+            self.create_arr_asteroid("G", num_large)
+
     def update_score(self, asteroid_size):
         if asteroid_size == "G":
             self.score += 20
@@ -282,6 +289,7 @@ class Game:
         self.arr_bullets = [bullet for bullet in self.arr_bullets if bullet.active]
 
         self.handle_collision()
+        self.spawn_asteroids()
 
 
     def render(self):
