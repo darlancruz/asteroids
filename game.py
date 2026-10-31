@@ -13,6 +13,7 @@ from objects.ship import Ship
 from objects.asteroid import Asteroid
 from objects.lifebar import LifeBar
 from objects.pause_icon import PauseIcon
+from objects.text_renderer import TextRenderer
 
 from collision import (check_ship_asteroid_collision, check_bullet_asteroid_collision)
 
@@ -34,6 +35,7 @@ class Game:
         self.is_paused = False
 
         self.lives = 3
+        self.score = 0
 
         self.vsync_enabled = True
         self.frame_count = 0
@@ -52,11 +54,11 @@ class Game:
         self.setup_projection_matrix()
         self.bullet_mesh = self.create_bullet_mesh()
 
-
         self.create_objects()
 
     def restart_game(self):
         self.lives = 3
+        self.score = 0
         self.is_paused = False
         self.arr_bullets.clear()
         self.arr_asteroid.clear()
@@ -149,9 +151,7 @@ class Game:
             return
 
         direction = glm.normalize(asteroid.velocity)
-
         perpendicular = glm.vec2(-direction.y, direction.x)
-
         speed = glm.length(asteroid.velocity) * 2
 
         velocity_a = perpendicular * speed
@@ -164,8 +164,10 @@ class Game:
     def create_objects(self):
         self.create_ship()
         self.create_arr_asteroid()
+        
         self.life_bar = LifeBar(self.ctx, self.program)
         self.pause_icon = PauseIcon(self.ctx, self.program)
+        self.score_renderer = TextRenderer(self.ctx, self.program, position=(6.8, 6.5))
 
     def calculate_delta_time(self, last_time):
         current_time = glfw.get_time()
@@ -212,12 +214,21 @@ class Game:
                 if check_bullet_asteroid_collision(bullet, asteroid):
                     bullet.active = False
                     self.split_asteroid(asteroid)
+                    self.update_score(asteroid.size)
                     self.arr_asteroid.remove(asteroid)
                     break
 
     def lose_life(self):
         self.lives -= 1
         self.ship.make_invulnerable()
+
+    def update_score(self, asteroid_size):
+        if asteroid_size == "G":
+            self.score += 20
+        elif asteroid_size == "M":
+            self.score +=50
+        else:
+            self.score+=100
 
     def update_fps_counter(self, dt):
             self.frame_count += 1
@@ -248,8 +259,10 @@ class Game:
 
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))
+
         self.ship.draw(self.program, is_dark=self.is_dark)
         self.life_bar.draw(self.lives, self.is_dark)
+        self.score_renderer.draw_text(f"{self.score:04d}", scale=0.8, is_dark=self.is_dark)
 
         for asteroid in self.arr_asteroid:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)
