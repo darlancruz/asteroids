@@ -12,6 +12,8 @@ from objects.mesh import Mesh
 from objects.ship import Ship
 from objects.asteroid import Asteroid
 from objects.lifebar import LifeBar
+from objects.pause_icon import PauseIcon
+
 from collision import (check_ship_asteroid_collision, check_bullet_asteroid_collision)
 
 class Game:
@@ -156,6 +158,7 @@ class Game:
         self.create_ship()
         self.create_arr_asteroid()
         self.life_bar = LifeBar(self.ctx, self.program)
+        self.pause_icon = PauseIcon(self.ctx, self.program)
 
     def calculate_delta_time(self, last_time):
         current_time = glfw.get_time()
@@ -243,6 +246,9 @@ class Game:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)
         for bullet in self.arr_bullets:
             bullet.draw(self.program, is_dark=self.is_dark)
+
+        if self.is_paused:
+            self.pause_icon.draw(is_dark=self.is_dark)
 
 
     def run(self):
