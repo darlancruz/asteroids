@@ -33,6 +33,9 @@ class Game:
         self.lives = 3
 
         self.vsync_enabled = True
+        self.frame_count = 0
+        self.fps_timer = 0.0
+        self.current_fps = 0.0
 
         self.initialize()
 
@@ -157,6 +160,9 @@ class Game:
         current_time = glfw.get_time()
         dt = current_time - last_time
 
+        if dt > 0.1:
+            dt = 0.1
+
         return current_time, dt
 
     def handle_input(self, dt):
@@ -196,7 +202,21 @@ class Game:
         self.lives -= 1
         self.ship.make_invulnerable()
 
+    def update_fps_counter(self, dt):
+            self.frame_count += 1
+            self.fps_timer += dt
+            
+            if self.fps_timer >= 0.5:
+                self.current_fps = self.frame_count / self.fps_timer
+                self.frame_count = 0
+                self.fps_timer = 0.0
+                
+                vsync_status = "ON" if self.vsync_enabled else "OFF"
+                title = f"Asteroids | FPS: {self.current_fps:.1f} | VSync: {vsync_status}"
+                glfw.set_window_title(self.window, title)
+
     def update(self, dt):
+        self.update_fps_counter(dt)
         self.ship.update(dt)
         for asteroid in self.arr_asteroid:
             asteroid.update(dt)
