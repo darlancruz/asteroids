@@ -4,7 +4,6 @@ import moderngl
 
 import random
 import math
-import numpy as np
 
 from objects.model import Model
 
@@ -56,6 +55,15 @@ class Asteroid(Model):
              x = random.choice([10,-10])
         
         return x,y
+
+    def split(self):
+        if self.size == "G":
+            return "M"
+
+        elif self.size == "M":
+            return "P"
+
+        return None
         
     def draw(self, program, ctx, is_dark=False):
         ctx.line_width = 2.0
