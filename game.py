@@ -55,6 +55,13 @@ class Game:
 
         self.create_objects()
 
+    def restart_game(self):
+        self.lives = 3
+        self.is_paused = False
+        self.arr_bullets.clear()
+        self.arr_asteroid.clear()
+        self.create_objects()
+
     def initialize_glfw(self):
         if not glfw.init():
             raise RuntimeError("Falha GLFW.")
@@ -185,6 +192,8 @@ class Game:
             elif key == glfw.KEY_V:
                 self.vsync_enabled = not self.vsync_enabled
                 glfw.swap_interval(1 if self.vsync_enabled else 0)
+            elif key == glfw.KEY_BACKSPACE:
+                self.restart_game()
 
 
     def handle_collision(self):
