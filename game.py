@@ -12,8 +12,7 @@ from objects.mesh import Mesh
 from objects.ship import Ship
 from objects.asteroid import Asteroid
 from objects.lifebar import LifeBar
-from collision import check_ship_asteroid_collision
-
+from collision import (check_ship_asteroid_collision, check_bullet_asteroid_collision)
 
 class Game:
     LIGHT_THEME = (0.608, 0.737, 0.059, 1.0)
@@ -83,7 +82,7 @@ class Game:
         return Mesh(self.ctx,self.program,vertices)
 
         
-    def create_asteroid(self, size="G"):
+    def create_asteroid(self, size="G", position=None, velocity=None):
         if size == "G":
             MIN_RADIUS = 0.85
             MAX_RADIUS = 1.15
@@ -119,13 +118,32 @@ class Game:
 
         vertices = np.array(vertices, dtype="f4")
         mesh = Mesh(self.ctx, self.program, vertices)
-        asteroid = Asteroid(mesh, size)
+        asteroid = Asteroid(mesh, size, radius, position, velocity)
 
         self.arr_asteroid.append(asteroid)
 
     def create_arr_asteroid(self, size = "G", items = 4):
         for _ in range(items):
             self.create_asteroid(size)
+
+    def split_asteroid(self, asteroid):
+        new_size = asteroid.split()
+
+        if new_size is None:
+            return
+
+        direction = glm.normalize(asteroid.velocity)
+
+        perpendicular = glm.vec2(-direction.y, direction.x)
+
+        speed = glm.length(asteroid.velocity) * 2
+
+        velocity_a = perpendicular * speed
+        velocity_b = -perpendicular * speed
+
+        self.create_asteroid(new_size, asteroid.position, velocity_a)
+        self.create_asteroid(new_size, asteroid.position, velocity_b)
+
 
     def create_objects(self):
         self.create_ship()
@@ -159,6 +177,15 @@ class Game:
                 self.ship.reset_position()
                 break
 
+    def handle_bullet_collision(self):
+        for bullet in self.arr_bullets:
+            for asteroid in self.arr_asteroid:
+                if check_bullet_asteroid_collision(bullet, asteroid):
+                    bullet.active = False
+                    self.split_asteroid(asteroid)
+                    self.arr_asteroid.remove(asteroid)
+                    break
+
     def lose_life(self):
         self.lives -= 1
         self.ship.make_invulnerable()
@@ -169,9 +196,12 @@ class Game:
             asteroid.update(dt)
         for bullet in self.arr_bullets:
             bullet.update(dt)
+
+        self.handle_bullet_collision()
         self.arr_bullets = [bullet for bullet in self.arr_bullets if bullet.active]
 
         self.handle_collision()
+
 
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))

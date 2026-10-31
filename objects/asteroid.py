@@ -1,4 +1,3 @@
-import glfw
 import glm
 import moderngl
 
