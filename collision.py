@@ -70,3 +70,8 @@ def check_ship_asteroid_collision(ship, asteroid):
                 return True
 
     return False
+
+def check_bullet_asteroid_collision(bullet, asteroid):
+    distance = glm.distance(bullet.position, asteroid.position)
+
+    return distance <= asteroid.radius
