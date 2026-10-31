@@ -32,6 +32,8 @@ class Game:
 
         self.lives = 3
 
+        self.vsync_enabled = True
+
         self.initialize()
 
     def initialize(self):
@@ -59,6 +61,7 @@ class Game:
 
         glfw.make_context_current(self.window)
         glfw.set_key_callback(self.window, self.handle_key_event)
+        glfw.swap_interval(1)
 
     def setup_shader_program(self):
         shader_dir = Path(__file__).parent / "shaders"
@@ -165,6 +168,9 @@ class Game:
         elif key == glfw.KEY_SPACE:
             bullet = self.ship.shoot(self.bullet_mesh)
             self.arr_bullets.append(bullet)
+        elif key == glfw.KEY_V:
+                self.vsync_enabled = not self.vsync_enabled
+                glfw.swap_interval(1 if self.vsync_enabled else 0)
 
 
     def handle_collision(self):
