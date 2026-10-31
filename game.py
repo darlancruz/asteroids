@@ -32,6 +32,7 @@ class Game:
         self.arr_bullets = []
 
         self.is_dark = True
+        self.is_stated = False
         self.is_paused = False
 
         self.lives = 3
@@ -169,8 +170,8 @@ class Game:
         self.pause_icon = PauseIcon(self.ctx, self.program)
 
         self.score_renderer = TextRenderer(self.ctx, self.program, position=(6.8, 6.5))
-        self.game_over_renderer = TextRenderer(self.ctx, self.program, position=(0.0, 1.0))
-        self.restart_renderer = TextRenderer(self.ctx, self.program, position=(0.0, -1.0))
+        self.main_text_renderer = TextRenderer(self.ctx, self.program, position=(0.0, 1.0))
+        self.secondary_text_renderer = TextRenderer(self.ctx, self.program, position=(0.0, -1.0))
 
     def calculate_delta_time(self, last_time):
         current_time = glfw.get_time()
@@ -189,17 +190,22 @@ class Game:
             if key == glfw.KEY_DOWN:
                 self.is_dark = not self.is_dark
             elif key == glfw.KEY_ENTER: 
-                if self.lives > 0:
+                if not self.is_stated:
+                    self.is_stated = True
+                    self.restart_game()
+                elif self.lives > 0:
                     self.is_paused = not self.is_paused
             elif key == glfw.KEY_SPACE:
-                if not self.is_paused and self.lives > 0:
-                    bullet = self.ship.shoot(self.bullet_mesh)
-                    self.arr_bullets.append(bullet)
+                if self.is_stated:
+                    if not self.is_paused and self.lives > 0:
+                        bullet = self.ship.shoot(self.bullet_mesh)
+                        self.arr_bullets.append(bullet)
             elif key == glfw.KEY_V:
                 self.vsync_enabled = not self.vsync_enabled
                 glfw.swap_interval(1 if self.vsync_enabled else 0)
             elif key == glfw.KEY_BACKSPACE:
-                self.restart_game()
+                if self.is_stated:
+                    self.restart_game()
 
 
     def handle_collision(self):
@@ -264,11 +270,12 @@ class Game:
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))
 
-        if self.lives > 0:
-            self.ship.draw(self.program, is_dark=self.is_dark)
-
-        self.life_bar.draw(self.lives, self.is_dark)
-        self.score_renderer.draw_text(f"{self.score:04d}", scale=0.8, is_dark=self.is_dark)
+        if self.is_stated:
+            if self.lives > 0:
+                self.ship.draw(self.program, is_dark=self.is_dark)
+                
+            self.life_bar.draw(self.lives, self.is_dark)
+            self.score_renderer.draw_text(f"{self.score:04d}", scale=0.8, is_dark=self.is_dark)
 
         for asteroid in self.arr_asteroid:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)
@@ -279,8 +286,13 @@ class Game:
             self.pause_icon.draw(is_dark=self.is_dark)
 
         if self.lives <= 0:
-            self.game_over_renderer.draw_text("FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True)
-            self.restart_renderer.draw_text("APERTE BACKSPACE PARA REINICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
+            self.main_text_renderer.draw_text("FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True)
+            self.secondary_text_renderer.draw_text("APERTE BACKSPACE PARA REINICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
+
+        if not self.is_stated:
+            self.main_text_renderer.draw_text("ASTEROID", scale=1.5, is_dark=self.is_dark, centered=True)
+            self.secondary_text_renderer.draw_text("APERTE ENTER PARA INICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
+            
 
 
     def run(self):
