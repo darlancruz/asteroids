@@ -169,12 +169,13 @@ class Game:
         self.ship.handleInput(self.window, dt)
 
     def handle_key_event(self, window, key, scancode, action, mods):
-        if key == glfw.KEY_DOWN and action == glfw.PRESS:
-            self.is_dark = not self.is_dark
-        elif key == glfw.KEY_SPACE:
-            bullet = self.ship.shoot(self.bullet_mesh)
-            self.arr_bullets.append(bullet)
-        elif key == glfw.KEY_V:
+        if action == glfw.PRESS:
+            if key == glfw.KEY_DOWN:
+                self.is_dark = not self.is_dark
+            elif key == glfw.KEY_SPACE:
+                bullet = self.ship.shoot(self.bullet_mesh)
+                self.arr_bullets.append(bullet)
+            elif key == glfw.KEY_V:
                 self.vsync_enabled = not self.vsync_enabled
                 glfw.swap_interval(1 if self.vsync_enabled else 0)
 
