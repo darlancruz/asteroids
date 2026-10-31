@@ -78,6 +78,10 @@ class Game:
         glfw.make_context_current(self.window)
         glfw.set_key_callback(self.window, self.handle_key_event)
         glfw.swap_interval(1)
+        glfw.set_window_size_callback(self.window, self.resize_callback)
+
+    def resize_callback(self, window, width, height):
+        self.update_projection(width, height)
 
     def setup_shader_program(self):
         shader_dir = Path(__file__).parent / "shaders"
@@ -88,7 +92,20 @@ class Game:
         )
 
     def setup_projection_matrix(self):
-        projection = glm.ortho(-10.0, 10.0,-7.5, 7.5,-1.0, 1.0)
+        width, height = glfw.get_window_size(self.window)
+        self.update_projection(width, height)
+
+    def update_projection(self, width, height):
+        if height == 0:
+            height = 1
+
+        self.ctx.viewport = (0, 0, width, height)
+
+        half_height = 7.5
+        aspect = width / height
+        half_width = half_height * aspect
+
+        projection = glm.ortho(-half_width, half_width, -half_height, half_height, -1.0, 1.0)
         self.program["projection"].write(np.array(projection.to_list(), dtype="f4").tobytes())
 
     def create_ship(self):
