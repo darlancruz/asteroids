@@ -10,22 +10,31 @@ from objects.model import Model
 
 class Asteroid(Model):
 
-    def __init__(self, mesh, size):
+    def __init__(self, mesh, size, radius, position = None, velocity=None):
         self.mesh = mesh
+        self.size = size
+        self.radius = radius
 
-        x,y = self.generate_initial_position()
-        self.position = glm.vec2(x,y)
+        if(position):
+            self.position = glm.vec2(position)
+        else:
+            x,y = self.generate_initial_position()
+            self.position = glm.vec2(x,y)
 
         self.angle =  math.radians(random.randint(1, 360))
 
-        if(size == "G"):
-            speed = 1.5
-        elif(size == "M"):
-            speed = 3
+        if velocity:
+            self.velocity = glm.vec2(velocity)
         else:
-            speed = 6
+            self.angle = math.radians(random.randint(1, 360))
+            if size == "G":
+                speed = 1.5
+            elif size == "M":
+                speed = 3.0
+            else:
+                speed = 6.0
 
-        self.velocity = glm.vec2(math.cos(self.angle), math.sin(self.angle)) * speed
+            self.velocity = glm.vec2(math.cos(self.angle), math.sin(self.angle)) * speed
 
     def generate_initial_position(self):
         x_limit = 10
@@ -51,4 +60,3 @@ class Asteroid(Model):
     def draw(self, program, ctx, is_dark=False):
         ctx.line_width = 2.0
         super().draw(program, mode=moderngl.LINE_LOOP, is_dark=is_dark)
-
