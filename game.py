@@ -29,6 +29,7 @@ class Game:
         self.arr_bullets = []
 
         self.is_dark = True
+        self.is_paused = False
 
         self.lives = 3
 
@@ -172,9 +173,12 @@ class Game:
         if action == glfw.PRESS:
             if key == glfw.KEY_DOWN:
                 self.is_dark = not self.is_dark
+            elif key == glfw.KEY_ENTER: 
+                self.is_paused = not self.is_paused
             elif key == glfw.KEY_SPACE:
-                bullet = self.ship.shoot(self.bullet_mesh)
-                self.arr_bullets.append(bullet)
+                if not self.is_paused:
+                    bullet = self.ship.shoot(self.bullet_mesh)
+                    self.arr_bullets.append(bullet)
             elif key == glfw.KEY_V:
                 self.vsync_enabled = not self.vsync_enabled
                 glfw.swap_interval(1 if self.vsync_enabled else 0)
@@ -249,8 +253,10 @@ class Game:
 
             glfw.poll_events()
 
-            self.handle_input(dt)
-            self.update(dt)
+            if not self.is_paused:
+                self.handle_input(dt)
+                self.update(dt)
+
             self.render()
 
             glfw.swap_buffers(self.window)
