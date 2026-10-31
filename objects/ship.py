@@ -1,3 +1,5 @@
+import math
+
 import glfw
 import glm
 import moderngl
@@ -65,7 +67,7 @@ class Ship(Model):
 
 
     def update(self, dt):
-        self.velocity *= self.FRICTION
+        self.velocity *= math.pow(self.FRICTION, dt * 60.0)
         self.update_invulnerability(dt)
 
         super().update(dt)
