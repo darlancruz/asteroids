@@ -167,7 +167,10 @@ class Game:
         
         self.life_bar = LifeBar(self.ctx, self.program)
         self.pause_icon = PauseIcon(self.ctx, self.program)
+
         self.score_renderer = TextRenderer(self.ctx, self.program, position=(6.8, 6.5))
+        self.game_over_renderer = TextRenderer(self.ctx, self.program, position=(0.0, 1.0))
+        self.restart_renderer = TextRenderer(self.ctx, self.program, position=(0.0, -1.0))
 
     def calculate_delta_time(self, last_time):
         current_time = glfw.get_time()
@@ -186,9 +189,10 @@ class Game:
             if key == glfw.KEY_DOWN:
                 self.is_dark = not self.is_dark
             elif key == glfw.KEY_ENTER: 
-                self.is_paused = not self.is_paused
+                if self.lives > 0:
+                    self.is_paused = not self.is_paused
             elif key == glfw.KEY_SPACE:
-                if not self.is_paused:
+                if not self.is_paused and self.lives > 0:
                     bullet = self.ship.shoot(self.bullet_mesh)
                     self.arr_bullets.append(bullet)
             elif key == glfw.KEY_V:
@@ -260,7 +264,9 @@ class Game:
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))
 
-        self.ship.draw(self.program, is_dark=self.is_dark)
+        if self.lives > 0:
+            self.ship.draw(self.program, is_dark=self.is_dark)
+
         self.life_bar.draw(self.lives, self.is_dark)
         self.score_renderer.draw_text(f"{self.score:04d}", scale=0.8, is_dark=self.is_dark)
 
@@ -271,6 +277,10 @@ class Game:
 
         if self.is_paused:
             self.pause_icon.draw(is_dark=self.is_dark)
+
+        if self.lives <= 0:
+            self.game_over_renderer.draw_text("FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True)
+            self.restart_renderer.draw_text("APERTE BACKSPACE PARA REINICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
 
 
     def run(self):
