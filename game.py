@@ -9,6 +9,7 @@ import numpy as np
 import random
 
 from objects.mesh import Mesh
+from objects.model import Model
 from objects.ship import Ship
 from objects.asteroid import Asteroid
 from objects.lifebar import LifeBar
@@ -105,6 +106,8 @@ class Game:
         half_height = 7.5
         aspect = width / height
         half_width = half_height * aspect
+
+        Model.SCREEN_WIDTH = half_width
 
         projection = glm.ortho(-half_width, half_width, -half_height, half_height, -1.0, 1.0)
         self.program["projection"].write(np.array(projection.to_list(), dtype="f4").tobytes())
