@@ -16,7 +16,8 @@ from objects.lifebar import LifeBar
 from objects.pause_icon import PauseIcon
 from objects.text_renderer import TextRenderer
 
-from collision import (check_ship_asteroid_collision, check_bullet_asteroid_collision)
+from collision import check_ship_asteroid_collision, check_bullet_asteroid_collision
+
 
 class Game:
     LIGHT_THEME = (0.608, 0.737, 0.059, 1.0)
@@ -44,6 +45,14 @@ class Game:
         self.frame_count = 0
         self.fps_timer = 0.0
         self.current_fps = 0.0
+
+        self.key_actions = {
+            glfw.KEY_DOWN: self.toggle_dark_mode,
+            glfw.KEY_ENTER: self.handle_enter,
+            glfw.KEY_SPACE: self.handle_shoot,
+            glfw.KEY_V: self.toggle_vsync,
+            glfw.KEY_BACKSPACE: self.handle_restart,
+        }
 
         self.initialize()
 
@@ -79,7 +88,7 @@ class Game:
             raise RuntimeError("Erro ao criar janela.")
 
         glfw.make_context_current(self.window)
-        glfw.set_key_callback(self.window, self.handle_key_event)
+        glfw.set_key_callback(self.window, self.key_callback)
         glfw.swap_interval(1)
         glfw.set_window_size_callback(self.window, self.resize_callback)
 
@@ -91,7 +100,7 @@ class Game:
 
         return self.ctx.program(
             vertex_shader=(shader_dir / "basic.vert").read_text(),
-            fragment_shader=(shader_dir / "basic.frag").read_text()
+            fragment_shader=(shader_dir / "basic.frag").read_text(),
         )
 
     def setup_projection_matrix(self):
@@ -110,21 +119,26 @@ class Game:
 
         Model.SCREEN_WIDTH = half_width
 
-        projection = glm.ortho(-half_width, half_width, -half_height, half_height, -1.0, 1.0)
-        self.program["projection"].write(np.array(projection.to_list(), dtype="f4").tobytes())
+        projection = glm.ortho(
+            -half_width, half_width, -half_height, half_height, -1.0, 1.0
+        )
+        self.program["projection"].write(
+            np.array(projection.to_list(), dtype="f4").tobytes()
+        )
 
     def create_ship(self):
         self.ship = Ship(self.ship_mesh)
 
     def create_ship_mesh(self):
-        ship_vertices = np.array([0.8, 0.0, -0.4, 0.4, -0.2, 0.0, -0.4, -0.4], dtype="f4")
+        ship_vertices = np.array(
+            [0.8, 0.0, -0.4, 0.4, -0.2, 0.0, -0.4, -0.4], dtype="f4"
+        )
         return Mesh(self.ctx, self.program, ship_vertices)
 
     def create_bullet_mesh(self):
         vertices = np.array([0.12, 0.0, 0.0, 0.12, -0.12, 0.0, 0.0, -0.12], dtype="f4")
-        return Mesh(self.ctx,self.program,vertices)
+        return Mesh(self.ctx, self.program, vertices)
 
-        
     def create_asteroid(self, size="G", position=None, velocity=None):
         if size == "G":
             MIN_RADIUS = 0.85
@@ -135,21 +149,21 @@ class Game:
         elif size == "M":
             MIN_RADIUS = 0.45
             MAX_RADIUS = 0.75
-            
+
             MIN_SEGMENT = 6
             MAX_SEGMENT = 10
         else:
             MIN_RADIUS = 0.25
             MAX_RADIUS = 0.55
-                    
+
             MIN_SEGMENT = 4
             MAX_SEGMENT = 8
 
         segments = random.randint(MIN_SEGMENT, MAX_SEGMENT)
-    
+
         vertices = []
         base_radius = 1.5
-            
+
         for i in range(segments):
             radius = base_radius * random.uniform(MIN_RADIUS, MAX_RADIUS)
             angle = 2.0 * math.pi * i / segments
@@ -165,7 +179,7 @@ class Game:
 
         self.arr_asteroid.append(asteroid)
 
-    def create_arr_asteroid(self, size = "G", items = 4):
+    def create_arr_asteroid(self, size="G", items=4):
         for _ in range(items):
             self.create_asteroid(size)
 
@@ -185,17 +199,20 @@ class Game:
         self.create_asteroid(new_size, asteroid.position, velocity_a)
         self.create_asteroid(new_size, asteroid.position, velocity_b)
 
-
     def create_objects(self):
         self.create_ship()
         self.create_arr_asteroid()
-        
+
         self.life_bar = LifeBar(self.ctx, self.program)
         self.pause_icon = PauseIcon(self.ctx, self.program)
 
         self.score_renderer = TextRenderer(self.ctx, self.program, position=(6.8, 6.5))
-        self.main_text_renderer = TextRenderer(self.ctx, self.program, position=(0.0, 1.0))
-        self.secondary_text_renderer = TextRenderer(self.ctx, self.program, position=(0.0, -1.0))
+        self.main_text_renderer = TextRenderer(
+            self.ctx, self.program, position=(0.0, 1.0)
+        )
+        self.secondary_text_renderer = TextRenderer(
+            self.ctx, self.program, position=(0.0, -1.0)
+        )
 
     def calculate_delta_time(self, last_time):
         current_time = glfw.get_time()
@@ -209,33 +226,42 @@ class Game:
     def handle_input(self, dt):
         self.ship.handleInput(self.window, dt)
 
-    def handle_key_event(self, window, key, scancode, action, mods):
+    def key_callback(self, window, key, scancode, action, mods):
         if action == glfw.PRESS:
-            if key == glfw.KEY_DOWN:
-                self.is_dark = not self.is_dark
-            elif key == glfw.KEY_ENTER: 
-                if not self.is_stated:
-                    self.is_stated = True
-                    self.restart_game()
-                elif self.lives > 0:
-                    self.is_paused = not self.is_paused
-            elif key == glfw.KEY_SPACE:
-                if self.is_stated:
-                    if not self.is_paused and self.lives > 0:
-                        bullet = self.ship.shoot(self.bullet_mesh)
-                        self.arr_bullets.append(bullet)
-            elif key == glfw.KEY_V:
-                self.vsync_enabled = not self.vsync_enabled
-                glfw.swap_interval(1 if self.vsync_enabled else 0)
-            elif key == glfw.KEY_BACKSPACE:
-                if self.is_stated:
-                    self.restart_game()
+            self.on_key_action(key)
 
+    def on_key_action(self, key):
+        action = self.key_actions.get(key)
+        if action:
+            action()
+
+    def toggle_dark_mode(self):
+        self.is_dark = not self.is_dark
+
+    def handle_enter(self):
+        if not self.is_stated:
+            self.is_stated = True
+            self.restart_game()
+        elif self.lives > 0:
+            self.is_paused = not self.is_paused
+
+    def handle_shoot(self):
+        if self.is_stated and not self.is_paused and self.lives > 0:
+            bullet = self.ship.shoot(self.bullet_mesh)
+            self.arr_bullets.append(bullet)
+
+    def toggle_vsync(self):
+        self.vsync_enabled = not self.vsync_enabled
+        glfw.swap_interval(1 if self.vsync_enabled else 0)
+
+    def handle_restart(self):
+        if self.is_stated:
+            self.restart_game()
 
     def handle_collision(self):
         if self.ship.invulnerability_time > 0:
             return
-    
+
         for asteroid in self.arr_asteroid:
             if check_ship_asteroid_collision(self.ship, asteroid):
                 self.lose_life()
@@ -257,7 +283,7 @@ class Game:
         self.ship.make_invulnerable()
 
     def spawn_asteroids(self):
-       if len(self.arr_asteroid) < 2:
+        if len(self.arr_asteroid) < 2:
             self.current_wave += 1
             num_large = min(2 + self.current_wave, 8)
             self.create_arr_asteroid("G", num_large)
@@ -266,22 +292,22 @@ class Game:
         if asteroid_size == "G":
             self.score += 20
         elif asteroid_size == "M":
-            self.score +=50
+            self.score += 50
         else:
-            self.score+=100
+            self.score += 100
 
     def update_fps_counter(self, dt):
-            self.frame_count += 1
-            self.fps_timer += dt
-            
-            if self.fps_timer >= 0.5:
-                self.current_fps = self.frame_count / self.fps_timer
-                self.frame_count = 0
-                self.fps_timer = 0.0
-                
-                vsync_status = "ON" if self.vsync_enabled else "OFF"
-                title = f"Asteroids | FPS: {self.current_fps:.1f} | VSync: {vsync_status}"
-                glfw.set_window_title(self.window, title)
+        self.frame_count += 1
+        self.fps_timer += dt
+
+        if self.fps_timer >= 0.5:
+            self.current_fps = self.frame_count / self.fps_timer
+            self.frame_count = 0
+            self.fps_timer = 0.0
+
+            vsync_status = "ON" if self.vsync_enabled else "OFF"
+            title = f"Asteroids | FPS: {self.current_fps:.1f} | VSync: {vsync_status}"
+            glfw.set_window_title(self.window, title)
 
     def update(self, dt):
         self.update_fps_counter(dt)
@@ -297,16 +323,17 @@ class Game:
         self.handle_collision()
         self.spawn_asteroids()
 
-
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))
 
         if self.is_stated:
             if self.lives > 0:
                 self.ship.draw(self.program, is_dark=self.is_dark)
-                
+
             self.life_bar.draw(self.lives, self.is_dark)
-            self.score_renderer.draw_text(f"{self.score:04d}", scale=0.8, is_dark=self.is_dark)
+            self.score_renderer.draw_text(
+                f"{self.score:04d}", scale=0.8, is_dark=self.is_dark
+            )
 
         for asteroid in self.arr_asteroid:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)
@@ -317,14 +344,26 @@ class Game:
             self.pause_icon.draw(is_dark=self.is_dark)
 
         if self.lives <= 0 and self.is_stated:
-            self.main_text_renderer.draw_text("FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True)
-            self.secondary_text_renderer.draw_text("APERTE BACKSPACE PARA REINICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
+            self.main_text_renderer.draw_text(
+                "FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True
+            )
+            self.secondary_text_renderer.draw_text(
+                "APERTE BACKSPACE PARA REINICIAR",
+                scale=0.5,
+                is_dark=self.is_dark,
+                centered=True,
+            )
 
         if not self.is_stated:
-            self.main_text_renderer.draw_text("ASTEROID", scale=1.5, is_dark=self.is_dark, centered=True)
-            self.secondary_text_renderer.draw_text("APERTE ENTER PARA INICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
-            
-
+            self.main_text_renderer.draw_text(
+                "ASTEROID", scale=1.5, is_dark=self.is_dark, centered=True
+            )
+            self.secondary_text_renderer.draw_text(
+                "APERTE ENTER PARA INICIAR",
+                scale=0.5,
+                is_dark=self.is_dark,
+                centered=True,
+            )
 
     def run(self):
         last_time = glfw.get_time()
