@@ -64,9 +64,8 @@ class Game:
         self.program = self.setup_shader_program()
 
         self.setup_projection_matrix()
-        self.bullet_mesh = self.create_bullet_mesh()
-        self.ship_mesh = self.create_ship_mesh()
 
+        self.create_meshs()
         self.create_objects()
 
     def restart_game(self):
@@ -128,6 +127,10 @@ class Game:
 
     def create_ship(self):
         self.ship = Ship(self.ship_mesh)
+
+    def create_meshs(self):
+        self.ship_mesh = self.create_ship_mesh()
+        self.bullet_mesh = self.create_bullet_mesh()
 
     def create_ship_mesh(self):
         ship_vertices = np.array(
