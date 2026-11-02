@@ -34,7 +34,7 @@ class Game:
         self.arr_bullets = []
 
         self.is_dark = True
-        self.is_stated = False
+        self.is_started = False
         self.is_paused = False
 
         self.lives = 3
@@ -239,14 +239,14 @@ class Game:
         self.is_dark = not self.is_dark
 
     def handle_enter(self):
-        if not self.is_stated:
-            self.is_stated = True
+        if not self.is_started:
+            self.is_started = True
             self.restart_game()
         elif self.lives > 0:
             self.is_paused = not self.is_paused
 
     def handle_shoot(self):
-        if self.is_stated and not self.is_paused and self.lives > 0:
+        if self.is_started and not self.is_paused and self.lives > 0:
             bullet = self.ship.shoot(self.bullet_mesh)
             self.arr_bullets.append(bullet)
 
@@ -255,7 +255,7 @@ class Game:
         glfw.swap_interval(1 if self.vsync_enabled else 0)
 
     def handle_restart(self):
-        if self.is_stated:
+        if self.is_started:
             self.restart_game()
 
     def handle_collision(self):
@@ -343,11 +343,11 @@ class Game:
             bullet.draw(self.program, is_dark=self.is_dark)
 
     def render_ship(self):
-        if self.is_stated and self.lives > 0:
+        if self.is_started and self.lives > 0:
             self.ship.draw(self.program, is_dark=self.is_dark)
 
     def render_hud(self):
-        if not self.is_stated:
+        if not self.is_started:
             return
 
         self.life_bar.draw(self.lives, self.is_dark)
@@ -360,7 +360,7 @@ class Game:
             self.pause_icon.draw(is_dark=self.is_dark)
 
     def render_game_over(self):
-        if self.lives <= 0 and self.is_stated:
+        if self.lives <= 0 and self.is_started:
             self.main_text_renderer.draw_text(
                 "FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True
             )
@@ -372,7 +372,7 @@ class Game:
             )
 
     def render_menu(self):
-        if not self.is_stated:
+        if not self.is_started:
             self.main_text_renderer.draw_text(
                 "ASTEROID", scale=1.5, is_dark=self.is_dark, centered=True
             )
