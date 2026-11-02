@@ -40,8 +40,8 @@ class Asteroid(Model):
     def generate_initial_position(self):
         x_limit = 10.0
         y_limit = 7.5
-        
-        bound_x = x_limit + self.WRAP_MARGIN
+             
+        bound_x = x_limit + self.WRAP_MARGIN + 5
         bound_y = y_limit + self.WRAP_MARGIN
 
         side = random.choice(['left', 'right', 'bottom', 'top'])
