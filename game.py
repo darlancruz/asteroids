@@ -125,9 +125,6 @@ class Game:
             np.array(projection.to_list(), dtype="f4").tobytes()
         )
 
-    def create_ship(self):
-        self.ship = Ship(self.ship_mesh)
-
     def create_meshs(self):
         self.ship_mesh = self.create_ship_mesh()
         self.bullet_mesh = self.create_bullet_mesh()
@@ -203,9 +200,9 @@ class Game:
         self.create_asteroid(new_size, asteroid.position, velocity_b)
 
     def create_objects(self):
-        self.create_ship()
         self.create_arr_asteroid()
 
+        self.ship = Ship(self.ship_mesh)
         self.life_bar = LifeBar(self.ctx, self.program)
         self.pause_icon = PauseIcon(self.ctx, self.program)
 
