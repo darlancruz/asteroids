@@ -326,23 +326,40 @@ class Game:
     def render(self):
         self.ctx.clear(*(Game.DARK_THEME if self.is_dark else Game.LIGHT_THEME))
 
-        if self.is_stated:
-            if self.lives > 0:
-                self.ship.draw(self.program, is_dark=self.is_dark)
+        self.render_asteroids()
+        self.render_bullets()
+        self.render_ship()
+        self.render_hud()
+        self.render_pause()
+        self.render_game_over()
+        self.render_menu()
 
-            self.life_bar.draw(self.lives, self.is_dark)
-            self.score_renderer.draw_text(
-                f"{self.score:04d}", scale=0.8, is_dark=self.is_dark
-            )
-
+    def render_asteroids(self):
         for asteroid in self.arr_asteroid:
             asteroid.draw(self.program, self.ctx, is_dark=self.is_dark)
+
+    def render_bullets(self):
         for bullet in self.arr_bullets:
             bullet.draw(self.program, is_dark=self.is_dark)
 
+    def render_ship(self):
+        if self.is_stated and self.lives > 0:
+            self.ship.draw(self.program, is_dark=self.is_dark)
+
+    def render_hud(self):
+        if not self.is_stated:
+            return
+
+        self.life_bar.draw(self.lives, self.is_dark)
+        self.score_renderer.draw_text(
+            f"{self.score:04d}", scale=0.8, is_dark=self.is_dark
+        )
+
+    def render_pause(self):
         if self.is_paused:
             self.pause_icon.draw(is_dark=self.is_dark)
 
+    def render_game_over(self):
         if self.lives <= 0 and self.is_stated:
             self.main_text_renderer.draw_text(
                 "FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True
@@ -354,6 +371,7 @@ class Game:
                 centered=True,
             )
 
+    def render_menu(self):
         if not self.is_stated:
             self.main_text_renderer.draw_text(
                 "ASTEROID", scale=1.5, is_dark=self.is_dark, centered=True
