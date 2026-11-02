@@ -56,6 +56,7 @@ class Game:
 
         self.setup_projection_matrix()
         self.bullet_mesh = self.create_bullet_mesh()
+        self.ship_mesh = self.create_ship_mesh()
 
         self.create_objects()
 
@@ -113,9 +114,11 @@ class Game:
         self.program["projection"].write(np.array(projection.to_list(), dtype="f4").tobytes())
 
     def create_ship(self):
+        self.ship = Ship(self.ship_mesh)
+
+    def create_ship_mesh(self):
         ship_vertices = np.array([0.8, 0.0, -0.4, 0.4, -0.2, 0.0, -0.4, -0.4], dtype="f4")
-        mesh = Mesh(self.ctx, self.program, ship_vertices)
-        self.ship = Ship(mesh)
+        return Mesh(self.ctx, self.program, ship_vertices)
 
     def create_bullet_mesh(self):
         vertices = np.array([0.12, 0.0, 0.0, 0.12, -0.12, 0.0, 0.0, -0.12], dtype="f4")
