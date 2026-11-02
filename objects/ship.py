@@ -7,6 +7,7 @@ import moderngl
 from objects.model import Model
 from objects.bullet import Bullet
 
+
 class Ship(Model):
     ACCEL = 12.0
     FRICTION = 0.985
@@ -20,7 +21,6 @@ class Ship(Model):
         self.visible = True
 
         super().__init__(mesh)
-        
 
     def handleInput(self, window, dt):
         if glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS:
@@ -49,22 +49,20 @@ class Ship(Model):
         else:
             self.visible = True
 
-
     def reset_position(self):
         self.position = glm.vec2(0.0, 0.0)
         self.velocity = glm.vec2(0.0, 0.0)
         self.angle = 0.0
 
     def get_direction(self):
-        return glm.vec2(glm.cos(self.angle),glm.sin(self.angle))
+        return glm.vec2(glm.cos(self.angle), glm.sin(self.angle))
 
     def shoot(self, bullet_mesh):
 
         direction = self.get_direction()
         position = self.position + direction * 0.8
 
-        return Bullet(bullet_mesh,position,direction)
-
+        return Bullet(bullet_mesh, position, direction)
 
     def update(self, dt):
         self.velocity *= math.pow(self.FRICTION, dt * 60.0)
@@ -75,6 +73,5 @@ class Ship(Model):
     def draw(self, program, is_dark=False):
         if not self.visible:
             return
-        
-        super().draw(program, mode=moderngl.TRIANGLE_FAN, is_dark=is_dark)
 
+        super().draw(program, mode=moderngl.TRIANGLE_FAN, is_dark=is_dark)

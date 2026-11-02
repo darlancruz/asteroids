@@ -3,6 +3,7 @@ import moderngl
 
 from objects.model import Model
 
+
 class Bullet(Model):
     SPEED = 15.0
     MAX_DISTANCE = 15.0
@@ -31,8 +32,4 @@ class Bullet(Model):
         if not self.active:
             return
 
-        super().draw(
-            program,
-            mode=moderngl.TRIANGLE_FAN,
-            is_dark=is_dark
-        )
+        super().draw(program, mode=moderngl.TRIANGLE_FAN, is_dark=is_dark)

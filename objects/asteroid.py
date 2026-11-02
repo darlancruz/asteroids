@@ -6,16 +6,17 @@ import math
 
 from objects.model import Model
 
+
 class Asteroid(Model):
     WRAP_MARGIN = 2
 
-    def __init__(self, mesh, size, radius, position = None, velocity=None):
+    def __init__(self, mesh, size, radius, position=None, velocity=None):
         super().__init__(mesh)
         self.mesh = mesh
         self.size = size
         self.radius = radius
 
-        if(position):
+        if position:
             self.position = glm.vec2(position)
         else:
             x, y = self.generate_initial_position()
@@ -40,22 +41,22 @@ class Asteroid(Model):
     def generate_initial_position(self):
         x_limit = 10.0
         y_limit = 7.5
-             
+
         bound_x = x_limit + self.WRAP_MARGIN + 5
         bound_y = y_limit + self.WRAP_MARGIN
 
-        side = random.choice(['left', 'right', 'bottom', 'top'])
+        side = random.choice(["left", "right", "bottom", "top"])
 
-        if side == 'left':
+        if side == "left":
             x = -bound_x
             y = random.uniform(-bound_y, bound_y)
-        elif side == 'right':
+        elif side == "right":
             x = bound_x
             y = random.uniform(-bound_y, bound_y)
-        elif side == 'bottom':
+        elif side == "bottom":
             x = random.uniform(-bound_x, bound_x)
             y = -bound_y
-        else:  
+        else:
             x = random.uniform(-bound_x, bound_x)
             y = bound_y
 
@@ -65,14 +66,14 @@ class Asteroid(Model):
         bound_x = self.SCREEN_WIDTH + self.WRAP_MARGIN
         bound_y = self.SCREEN_HEIGHT + self.WRAP_MARGIN
 
-        if self.position.x > bound_x: 
+        if self.position.x > bound_x:
             self.position.x = -bound_x
-        elif self.position.x < -bound_x: 
+        elif self.position.x < -bound_x:
             self.position.x = bound_x
 
         if self.position.y > bound_y:
             self.position.y = -bound_y
-        elif self.position.y < -bound_y: 
+        elif self.position.y < -bound_y:
             self.position.y = bound_y
 
     def split(self):
@@ -83,7 +84,7 @@ class Asteroid(Model):
             return "P"
 
         return None
-        
+
     def draw(self, program, ctx, is_dark=False):
         ctx.line_width = 2.0
         super().draw(program, mode=moderngl.LINE_LOOP, is_dark=is_dark)

@@ -1,5 +1,6 @@
 import glm
 
+
 def get_axes(vertices):
     axes = []
 
@@ -11,16 +12,18 @@ def get_axes(vertices):
 
         axis = glm.vec2(-edge.y, edge.x)
 
-        if(glm.length(axis) > 0):
+        if glm.length(axis) > 0:
             axis = glm.normalize(axis)
             axes.append(axis)
 
     return axes
 
+
 def project_polygon(vertices, axis):
     projections = [glm.dot(vertex, axis) for vertex in vertices]
 
     return min(projections), max(projections)
+
 
 def check_collision(vertices_a, vertices_b):
     axes = get_axes(vertices_a) + get_axes(vertices_b)
@@ -31,8 +34,9 @@ def check_collision(vertices_a, vertices_b):
 
         if max_a < min_b or max_b < min_a:
             return False
-        
+
     return True
+
 
 def triangulate_fan(vertices):
     triangles = []
@@ -41,6 +45,7 @@ def triangulate_fan(vertices):
         triangles.append(triangle)
 
     return triangles
+
 
 def get_asteroid_triangles(asteroid):
     vertices = asteroid.get_world_vertices()
@@ -70,6 +75,7 @@ def check_ship_asteroid_collision(ship, asteroid):
                 return True
 
     return False
+
 
 def check_bullet_asteroid_collision(bullet, asteroid):
     distance = glm.distance(bullet.position, asteroid.position)

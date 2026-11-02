@@ -5,18 +5,44 @@ import numpy as np
 from objects.mesh import Mesh
 from objects.hud_element import HUDElement
 
+
 class LifeBar(HUDElement):
 
     def __init__(self, ctx, program):
         super().__init__(ctx, program, position=(-8.8, 6.5))
-        
+
         self.ctx = ctx
         self.program = program
 
-        vertices = np.array([0.0, -0.60, -0.25, -0.40, -0.50, -0.10, -0.55,  0.20,
-                            -0.45,  0.45, -0.25,  0.55,  0.00,  0.35,  0.25,  0.55,
-                            0.45,  0.45,  0.55,  0.20,  0.50, -0.10,  0.25, -0.40
-        ], dtype="f4")
+        vertices = np.array(
+            [
+                0.0,
+                -0.60,
+                -0.25,
+                -0.40,
+                -0.50,
+                -0.10,
+                -0.55,
+                0.20,
+                -0.45,
+                0.45,
+                -0.25,
+                0.55,
+                0.00,
+                0.35,
+                0.25,
+                0.55,
+                0.45,
+                0.45,
+                0.55,
+                0.20,
+                0.50,
+                -0.10,
+                0.25,
+                -0.40,
+            ],
+            dtype="f4",
+        )
 
         self.mesh = Mesh(ctx, program, vertices)
 
