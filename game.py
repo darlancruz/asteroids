@@ -313,7 +313,7 @@ class Game:
         if self.is_paused:
             self.pause_icon.draw(is_dark=self.is_dark)
 
-        if self.lives <= 0:
+        if self.lives <= 0 and self.is_stated:
             self.main_text_renderer.draw_text("FIM DE JOGO", scale=1.5, is_dark=self.is_dark, centered=True)
             self.secondary_text_renderer.draw_text("APERTE BACKSPACE PARA REINICIAR", scale=0.5, is_dark=self.is_dark, centered=True)
 
